@@ -9,6 +9,7 @@ var textparser = require('./');
 // An rudimentary "fallback" parser which divides a document into paragraphs and
 // words.
 
+exports.Parser = PlainTextParser
 function PlainTextParser() {
   textparser.Parser.call(this, 'Plain text', ['public.text']);
 }
