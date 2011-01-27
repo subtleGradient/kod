@@ -1,7 +1,7 @@
 /*
 ---
 name: plaintext.test
-description: tests plaintext AST parsing for Kod
+description: tests plaintext parsing
 
 authors: Thomas Aylott <thomas@subtlegradient.com>
 copyright: © 2011 Thomas Aylott
@@ -9,8 +9,15 @@ license: MIT
 ...
 */
 
-var ptt = require('./sg-parser-testing-tools-for-kod')
-var testrunner = require('./testrunner')
+/**
+	Each Editor has its own API for parsing stuff.
+	This PLATFORM detection code allows you to pull in a different set of testing tools
+	depending on the platform.
+*/
+var PLATFORM
+// TODO: Improve the text editor playform detection. Is there a userAgent to sniff? ;)
+if (function(){try{return global._kod || require('../').outsideOfKod }catch(e){}}()) PLATFORM = 'kod'
+var ptt = require('./sg-parser-testing-tools' + (PLATFORM ? "-for-" + PLATFORM : ''))
 
 // //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  // //
 var mockTests = {}
