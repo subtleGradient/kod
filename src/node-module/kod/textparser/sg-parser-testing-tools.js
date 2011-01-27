@@ -30,23 +30,23 @@ PMp.run = function ParserMock$run(t){
 	t.ok(this.getSource())
 	t.ok(this.getExpectedXML())
 	t.equal
-		(	expected = this.getExpectedTreeAsXML_withoutText()
-		,	actual = this.getActualTreeAsXML_withoutText()
+		(	actual = this.getActualTreeAsXML_withoutText()
+		,	expected = this.getExpectedTreeAsXML_withoutText()
 		,	this.Message.failedCompareWithoutText
 			// +	"\n\tActual: " + actual
 			// +	"\n\tExpect: " + expected
 		)
 	t.equal
-		(	expected = this.getExpectedTreeAsXML_withoutTextBetweenNodes()
-		,	actual = this.getActualTreeAsXML_withoutTextBetweenNodes()
+		(	actual = this.getActualTreeAsXML_withoutTextBetweenNodes()
+		,	expected = this.getExpectedTreeAsXML_withoutTextBetweenNodes()
 		,	this.Message.failedCompareWithoutTextBetweenNodes
 			// +	"\n\tActual: " + actual
 			// +	"\n\tExpect: " + expected
 		)
 	// FIXME: convertNodeToXML should include unscoped text from the source
 	// t.equal
-	// 	(	expected = this.getExpectedTreeAsXML()
-	// 	,	actual = this.getActualTreeAsXML()
+	// 	(	actual = this.getActualTreeAsXML()
+	// 	,	expected = this.getExpectedTreeAsXML()
 	// 	,	this.Message.failedCompare
 	// 		+	"\n\tActual: " + actual
 	// 		+	"\n\tExpect: " + expected
