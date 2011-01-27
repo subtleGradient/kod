@@ -25,14 +25,15 @@ PMp.Message =
 	}
 
 PMp.run = function ParserMock$run(t){
-	var expected, actual
+	var source, expected, actual
 	if (t.expect instanceof Function) t.expect(5)
-	t.ok(this.getSource())
+	t.ok(source = this.getSource())
 	t.ok(this.getExpectedXML())
 	t.equal
 		(	actual = this.getActualTreeAsXML_withoutText()
 		,	expected = this.getExpectedTreeAsXML_withoutText()
 		,	this.Message.failedCompareWithoutText
+			+	"\n\tSource: " + source
 			// +	"\n\tActual: " + actual
 			// +	"\n\tExpect: " + expected
 		)
