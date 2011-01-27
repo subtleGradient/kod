@@ -1,13 +1,109 @@
 /*
 ---
 name: sg-parser-testing-tools
-description: Parser Testing Tools help you write short and simple unit tests for syntax parsers
+description: |
+  SubtleGradient Parser Testing Tools
+  help you write short, simple and implementation agnostic unit tests
+  for syntax parsers of all sorts.
+  
+  Since each parser has its own API,
+  we must convert their custom syntax object
+  into something we can quickly write tests for.
+  
+  For SGPTT that standard format is an XML-like string.
+  e.g. <root><paragraph><word>Hello</word>, <word>world</word>!</paragraph></root>
 
 authors: Thomas Aylott <thomas@subtlegradient.com>
 copyright: © 2011 Thomas Aylott
 license: MIT
 ...
 */
+
+/**
+	ASTNode API
+	  The specific properties that you expose on each ASTNode don't really matter
+	since you can 'subclass' ParserMock and then override the default methods
+	with custom methods that parse however you want.
+	  But, if you stick to the default conventional ASTNode API defined in this file
+	you won't have to implement anything yourself and stuff will 'Just Work.'
+*/
+exports.ASTNodeObjectInterfaceReference =
+{
+	/**
+	REQUIRED
+	The kind of node this is.
+	e.g. paragraph, variable, punctuation definition string begin, etc...
+	NOTE: The 'kind' property is currently used as-is in the 'XML' without any escaping
+	
+	In TextMate,
+	scopes are vague on the left and more specific on the right.
+	e.g.
+	The scope "string.quoted.double.ruby"
+	will match the selector "string.quoted" and "string.quoted.double"
+	but won't match "quoted" or "quoted.string"
+	
+	In Espresso.app,
+	scopes map more directly to the way CSS selectors work.
+	e.g.
+	The scope "string.quoted.double.ruby"
+	will match the selector "string.quoted" and "string.quoted.double"
+	as well as "quoted" and "quoted.string" and "ruby.string" and "string:not(.python)"
+	*/
+	kind: "my.fancy.scope.of.doom"
+
+	/**
+	REQUIRED
+	Character offset from the beginning of the source text.
+	NOTE: this offset is relative to the offset of the parentNode
+	i.e. For "<p><w>Foo</w></p> <p><w>Bar</w></p>"
+		both "w" nodes will have an offset of 0.
+	*/
+	,offset: 0
+
+	/**
+	REQUIRED
+	The length of the text that this node is for.
+	e.g. <node>Howdy</node> would have a length of 5 regardless of its offset
+	*/
+	,length: 5
+
+	/**
+	OPTIONAL
+	The original text that this node describes.
+	i.e. For the source "hi there", a node at {offset:0, length:2} would have the value "hi"
+	NOTE: Since this is optional, the tests all need a source argument to be passed along
+	so that they can lookup this value on the fly as needed.
+	*/
+	,value:"Howdy"
+
+	/**
+	OPTIONAL
+	Fallback for the value property.
+	If the value property doesn't exist
+	and the getValue function does,
+	its return value will be use as the value.
+	*/
+	,getValue: function(){return "Howdy"}
+
+	/**
+	OPTIONAL
+	Your mom.
+	The node whose childNodes collection contains this node.
+	NOTE: This isn't currently used in SGPTT anywhere yet
+	*/
+	,parentNode:/*ASTNode*/{}
+
+	/**
+	OPTIONAL
+	Your kids.
+	The nodes whose parentNode is this node.
+	NOTE: This can be an Array, but it doesn't have to be. You can also use a simple object with integer keys.
+	Nothing in SGPTT relies on the childNodes object having a length or any methods at all.
+	*/
+	,childNodes:/*Object{Number:ASTNode}*/{}
+}
+
+// //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  // //
 
 exports.Mock = ParserMock
 function ParserMock(name){
@@ -44,7 +140,7 @@ PMp.run = function ParserMock$run(t){
 			// +	"\n\tActual: " + actual
 			// +	"\n\tExpect: " + expected
 		)
-	// FIXME: convertNodeToXML should include unscoped text from the source
+	// FIXME: convertNodeToXML should include text that doesn't have any nodes
 	// t.equal
 	// 	(	actual = this.getActualTreeAsXML()
 	// 	,	expected = this.getExpectedTreeAsXML()
@@ -90,9 +186,11 @@ PMp.convertNodeToXML = function(node, source){
 	// console.log(util.inspect(node,0,0))
 	if (!node) throw new Error('missing node')
 	if (!source) throw new Error('missing source')
+	var xmlNodeName = node.kind || node.scope || node.nodeName
+	if (!xmlNodeName) throw new Error('missing node name')
 	var xml = ''
-	xml += '<' + node.kind + '>'
-
+	xml += '<' + xmlNodeName + '>'
+	
 	if (node.childNodes)
 		// The source for childNodes is restricted to the innards of the node.
 		// Each node's offset is relative to the offset of its parent.
@@ -103,8 +201,8 @@ PMp.convertNodeToXML = function(node, source){
 		xml += node.getValue()
 	else
 		xml += this.getValue_ofNode_withSource(node, source)
-
-	xml += '</' + node.kind + '>'
+	
+	xml += '</' + xmlNodeName + '>'
 	return xml
 }
 
@@ -112,8 +210,8 @@ PMp.getValue_ofNode_withSource = function(node, source){
 	if (!node) throw new Error('missing node')
 	if (!source) throw new Error('missing source')
 	return source.substr
-		(	/*Espresso.app*/ node.offset	|| /*Kod.app*/ node.sourceLocation
-		,	/*Espresso.app*/ node.length	|| /*Kod.app*/ node.sourceLength
+		(	node.offset
+		,	node.length
 		)
 }
 
