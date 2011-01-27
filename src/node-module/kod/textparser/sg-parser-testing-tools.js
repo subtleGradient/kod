@@ -94,9 +94,11 @@ PMp.convertNodeToXML = function(node, source){
 	xml += '<' + node.kind + '>'
 
 	if (node.childNodes)
-		xml += this.convertNodesToXML(node.childNodes, source)
-	else if (node.nodeValue != null)
-		xml += node.nodeValue
+		// The source for childNodes is restricted to the innards of the node.
+		// Each node's offset is relative to the offset of its parent.
+		xml += this.convertNodesToXML(node.childNodes, this.getValue_ofNode_withSource(node, source))
+	else if (node.value != null)
+		xml += node.value
 	else if (node.getValue instanceof Function)
 		xml += node.getValue()
 	else
