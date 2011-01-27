@@ -81,9 +81,8 @@ PMp.convertNodesToXML = function(nodes, source){
 	if (!nodes) throw new Error('missing nodes')
 	if (!source) throw new Error('missing source')
 	var xml = ''
-	if (nodes) for (var i = -1, node; node = nodes[++i];){
+	if (nodes) for (var i = -1, node; node = nodes[++i];)
 		xml += this.convertNodeToXML(node, source)
-	}
 	return xml
 }
 
