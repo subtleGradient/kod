@@ -47,6 +47,10 @@ function unregisterParser(parser) {
 exports.unregisterParser = unregisterParser;
 
 
+exports.unregisterAllParsers = unregisterAllParsers
+function unregisterAllParsers(){ parsers = {} }
+
+
 /**
  * Retrieve a list of parsers which are able to handle the UTI. The returned
  * list is ordered by priority.
