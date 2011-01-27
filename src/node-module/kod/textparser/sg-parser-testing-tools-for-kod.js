@@ -34,10 +34,13 @@ function KodSyntaxMock$getActualTree(){
 
 KodSyntaxMock.prototype.getValue_ofNode_withSource =
 function KodSyntaxMock$getValue_ofNode_withSource(node, source){
-	return source.substr
+	var value = source.substr
 		(	node.sourceLocation
 		,	node.sourceLength
 		)
+	node._value = value
+	// console.log(util.inspect(node,0,0), util.inspect(source))
+	return value
 }
 
 // //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  // //
