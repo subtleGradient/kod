@@ -160,16 +160,20 @@ PlainTextParser.prototype.parse = function (parseTask) {
            (val == undefined || token.value === val);
   }
   
+  var UID = 0 // Unique ID for each node for debugging
   // create an AST node
   function astnode (kind) {
+    var node;
     if (kind === 'root') {
       // the root should not have source range info
-      return new kod.ASTNode('root');
+      node = new kod.ASTNode('root');
     }
-    return new kod.ASTNode(kind,
+    else node = new kod.ASTNode(kind,
       /* sourceLocation*/  token.location - parentSourceLocation,
        /* sourceLength */  token.length,
                            parentNode);
+    if (debug) node._id = ++ UID;
+    return node;
   }
   
   // statements
